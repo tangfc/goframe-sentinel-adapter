@@ -1,4 +1,4 @@
-module goFrame-sentinel-adapter
+module goframe-sentinel-adapter
 
 go 1.22.6
 
