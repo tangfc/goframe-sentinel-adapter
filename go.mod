@@ -1,4 +1,4 @@
-module goframe-sentinel-adapter
+module github.com/tangfc/goframe-sentinel-adapter
 
 go 1.22.6
 
