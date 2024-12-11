@@ -1,6 +1,6 @@
 package goframe
 
-import "github.com/gogf/gf/net/ghttp"
+import "github.com/gogf/gf/v2/net/ghttp"
 
 type (
 	Option  func(*options)
