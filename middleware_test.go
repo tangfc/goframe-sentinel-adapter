@@ -1,16 +1,15 @@
 package goframe
 
 import (
+	sentinel "github.com/alibaba/sentinel-golang/api"
+	"github.com/alibaba/sentinel-golang/core/flow"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	sentinel "github.com/alibaba/sentinel-golang/api"
-	"github.com/alibaba/sentinel-golang/core/flow"
-	"github.com/stretchr/testify/assert"
 )
 
 func initSentinel(t *testing.T) {
@@ -41,6 +40,7 @@ func initSentinel(t *testing.T) {
 	}
 }
 
+// middleware_test.go
 func TestSentinelMiddleware(t *testing.T) {
 	type args struct {
 		opts    []Option
@@ -67,7 +67,7 @@ func TestSentinelMiddleware(t *testing.T) {
 					path:    "/ping",
 					reqPath: "/ping",
 					handler: func(r *ghttp.Request) {
-						r.Response.Writeln("ping")
+						r.Response.WriteStatus(http.StatusOK, "ping")
 					},
 					body: nil,
 				},
@@ -80,14 +80,14 @@ func TestSentinelMiddleware(t *testing.T) {
 				args: args{
 					opts: []Option{
 						WithResourceExtractor(func(r *ghttp.Request) string {
-							return r.URL.Path
+							return r.Router.Uri
 						}),
 					},
 					method:  http.MethodPost,
 					path:    "/api/users/:id",
 					reqPath: "/api/users/123",
 					handler: func(r *ghttp.Request) {
-						r.Response.Writeln("ping")
+						r.Response.WriteStatusExit(http.StatusOK, "ping")
 					},
 					body: nil,
 				},
@@ -100,15 +100,14 @@ func TestSentinelMiddleware(t *testing.T) {
 				args: args{
 					opts: []Option{
 						WithBlockFallback(func(r *ghttp.Request) {
-							r.Response.WriteHeader(http.StatusBadRequest)
-							r.Response.Writeln("block")
+							r.Response.WriteStatusExit(http.StatusBadRequest, "block fallback")
 						}),
 					},
 					method:  http.MethodGet,
 					path:    "/ping",
 					reqPath: "/ping",
 					handler: func(r *ghttp.Request) {
-						r.Response.Writeln("ping")
+						r.Response.WriteStatus(http.StatusOK, "ping")
 					},
 					body: nil,
 				},
@@ -123,16 +122,16 @@ func TestSentinelMiddleware(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := g.Server()
+			s.SetRouteOverWrite(true)
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(SentinelMiddleware(tt.args.opts...))
 				group.ALL(tt.args.path, tt.args.handler)
 			})
+			s.Start()
 
 			r := httptest.NewRequest(tt.args.method, tt.args.reqPath, tt.args.body)
 			w := httptest.NewRecorder()
-
 			s.ServeHTTP(w, r)
-
 			assert.Equal(t, tt.want.code, w.Code)
 		})
 	}
