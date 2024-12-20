@@ -1,13 +1,13 @@
-Describe what this PR does / why we need it
-这个 PR 为 Sentinel 添加了 goframe 框架的适配器。通过这个适配器，开发者可以在 goframe 项目中方便地使用 Sentinel 的限流和熔断功能，提高系统的稳定性和可靠性。
+### What This PR Does / Why We Need It
+This PR adds a goframe framework adapter for Sentinel. With this adapter, developers can easily integrate Sentinel's rate limiting and circuit breaker functionalities into their goframe projects, thereby enhancing system stability and reliability.
 
-Describe how you did it
-1.实现了 SentinelMiddleware 函数，用于在 goframe 框架中集成 Sentinel。
-2.添加了withResourceExtractor 选项，允许开发者自定义资源提取逻辑。
-3.添加了WithBlockFallback 选项，允许开发者自定义阻塞时的回退逻辑。
-4.编写了相应的测试用例，确保适配器的正确性和稳定性。
+### How It Was Done
+1. Implemented the `SentinelMiddleware` function to integrate Sentinel into the goframe framework.
+2. Added the `withResourceExtractor` option to allow developers to customize resource extraction logic.
+3. Added the `WithBlockFallback` option to allow developers to customize fallback logic when blocked.
+4. Wrote corresponding test cases to ensure the correctness and stability of the adapter.
 
-Describe how to verify it
-go test -run ^TestSentinelMiddlewareDefault -v
-go test -run ^TestSentineIMiddlewareExtractor -v
-go test -run ^TestSentinelMiddlewareFallback -v
+### How to Verify It
+1. go test -run ^TestSentinelMiddlewareDefault -v 
+2. go test -run ^TestSentineIMiddlewareExtractor -v 
+3. go test -run ^TestSentinelMiddlewareFallback -v
