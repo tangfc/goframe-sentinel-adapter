@@ -10,7 +10,6 @@ type (
 	}
 )
 
-// evaluateOptions 评估选项
 func evaluateOptions(opts []Option) *options {
 	optCopy := &options{}
 	for _, opt := range opts {
